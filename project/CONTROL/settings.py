@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # My apps
+    'backend.sales.app.SalesConfig',
     'backend.products.app.ProductsConfig',
     'backend.accounts.app.AccountsConfig',
     # Others apps
