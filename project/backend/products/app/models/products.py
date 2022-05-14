@@ -25,5 +25,5 @@ class Product(Model):
     cashback_is_percent = BooleanField(blank=True, null=True)
     quantity = PositiveIntegerField()
     company = ForeignKey(Company, on_delete=SET_NULL, null=True)
-    coupons = ManyToManyField(Coupon, related_name='products')
     categories = ManyToManyField(Category, related_name='products')
+    coupons = ManyToManyField(Coupon, related_name='products')
