@@ -28,4 +28,4 @@ class SaleAdmin(admin.ModelAdmin):
     list_per_page = 50
     list_select_related = 'user', 'product', 'freight_company', 'payment_type'
     ordering = 'sale_date',
-    search_fields = 'sale_date',
+    search_fields = 'sale_date', 'product__name'

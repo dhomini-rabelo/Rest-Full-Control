@@ -4,9 +4,15 @@ from django.db.models import (Model, CharField, DateTimeField, TextField, EmailF
 class Company(Model):
     name = CharField(max_length=256)
 
+    def __str__(self):
+        return self.name
+
 
 class Category(Model):
     name = CharField(max_length=256)
+
+    def __str__(self):
+        return self.name    
 
 
 class Coupon(Model):
@@ -14,6 +20,9 @@ class Coupon(Model):
     value = DecimalField(decimal_places=2, max_digits=20)
     is_percent = BooleanField(default=True)
     is_for_all_products = BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
 
 
 class Product(Model):
@@ -27,3 +36,7 @@ class Product(Model):
     company = ForeignKey(Company, on_delete=SET_NULL, null=True)
     categories = ManyToManyField(Category, related_name='products')
     coupons = ManyToManyField(Coupon, related_name='products')
+
+
+    def __str__(self):
+        return self.name
