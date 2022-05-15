@@ -5,7 +5,7 @@ from backend.products import Feedback, Rating
 
 
 class FeedbackSerializer(serializers.ModelSerializer):
-    user = UserSerializer(source='user')
+    user = UserSerializer()
 
     class Meta:
         model = Feedback
@@ -13,7 +13,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
 
 class RatingSerializer(serializers.ModelSerializer):
-    user = UserSerializer(source='user')
+    user = UserSerializer()
 
     class Meta:
         model = Rating
