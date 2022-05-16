@@ -4,14 +4,20 @@ from django.db.models import Q
 
 class FilterSubscriber:
     filter_body_name = 'filters'
+    filter_models_name = 'filters_model'
 
-    def __init__(self, queries_obj: dict):
-        self.queries_obj = queries_obj
+    def __init__(self, mediator: dict, models: dict = {}):
+        self.mediator = mediator
+        self.models = models
 
     def filter_queryset(self, queryset: QuerySet, body: dict):
-        queries = body.get(self.filter_body_name)
-        if (not isinstance(queries, list)) or len(queries) == 0: return queryset
-        query_obj =  self.get_query_obj(queries)
+        model = body.get(self.filter_models_name)
+        if model in self.models.keys():
+            query_obj = self.get_many_queries(model)
+        else:
+            queries = body.get(self.filter_body_name)
+            if (not isinstance(queries, list)) or len(queries) == 0: return queryset
+            query_obj =  self.get_query_obj(queries)
         return queryset.filter(query_obj).distinct()
 
     def get_query_obj(self, queries: list[dict]):
@@ -22,11 +28,11 @@ class FilterSubscriber:
             
     def get_queries(self, queries: dict):
         try:
-            return Q(**{ self.queries_obj[k]: v for k, v in queries.items() if isinstance(v, (str, int, bool)) })
+            return Q(**{ self.mediator[k]: v for k, v in queries.items() if isinstance(v, (str, int, bool)) })
         except KeyError as error:
-            raise KeyError(f'{error} not in: {list(self.queries_obj.keys())}')
+            raise KeyError(f'{error} not in: {list(self.mediator.keys())}')
 
-    def get_many_queries(self, queries_obj: list[dict] | dict | list[list]):
+    def get_many_queries(self, queries_obj: list[dict | list] | dict | list[list & dict]):
         if isinstance(queries_obj, dict):
             return self.get_queries(queries_obj)
         elif isinstance(queries_obj, list):
@@ -38,3 +44,12 @@ class FilterSubscriber:
         else:
             raise TypeError('Invalid type for queries_obj, accept only list or dict')
 
+
+
+class FilterSubscriberWithoutMediator(FilterSubscriber):
+
+    def __init__(self, models: dict = {}):
+        self.models = models
+
+    def get_queries(self, queries: dict):
+        return Q(**{ k: v for k, v in queries.items() if isinstance(v, (str, int, bool)) })
