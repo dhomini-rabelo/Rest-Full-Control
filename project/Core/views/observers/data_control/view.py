@@ -33,7 +33,7 @@ class DataControlApi(APIView):
         if isinstance(obj, Iterable) or isinstance(obj, dict):
             return obj
         else:
-            raise ValueError('Invalid object type')
+            raise ValueError('Invalid type for queries_obj, accept only list or dict')
 
     def notify_subscribers(self, current_queryset, request_body) -> QuerySet | Iterable | dict:
         queryset_or_object = current_queryset

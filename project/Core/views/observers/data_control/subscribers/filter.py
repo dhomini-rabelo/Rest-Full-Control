@@ -1,5 +1,8 @@
+from typing import Union
 from django.db.models.query import QuerySet
 from django.db.models import Q
+from ...data_control.exceptions import ModelNotFound
+
 
 
 class FilterSubscriber:
@@ -13,7 +16,9 @@ class FilterSubscriber:
     def filter_queryset(self, queryset: QuerySet, body: dict):
         model = body.get(self.filter_models_name)
         if model in self.models.keys():
-            query_obj = self.get_many_queries(model)
+            query_obj = self.get_many_queries(self.models[model])
+        elif model is not None:
+            raise ModelNotFound(f'{model} not found in {list(self.models.keys())}')
         else:
             queries = body.get(self.filter_body_name)
             if (not isinstance(queries, list)) or len(queries) == 0: return queryset
@@ -32,7 +37,7 @@ class FilterSubscriber:
         except KeyError as error:
             raise KeyError(f'{error} not in: {list(self.mediator.keys())}')
 
-    def get_many_queries(self, queries_obj: list[dict | list] | dict | list[list & dict]):
+    def get_many_queries(self, queries_obj: list[dict | list] | dict | list[Union[list, dict]]):
         if isinstance(queries_obj, dict):
             return self.get_queries(queries_obj)
         elif isinstance(queries_obj, list):
