@@ -22,7 +22,7 @@ class CouponSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Coupon
-        fields = 'id', 'name', 'is_percent', 'is_for_all_products'
+        fields = 'id', 'name', 'value', 'is_percent', 'is_for_all_products'
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'description', 'current_price', 'promotion_price', 'cashback_value',
+            'id', 'name', 'description', 'current_price', 'promotion_price', 'cashback_value',
             'cashback_is_percent', 'quantity', 'company', 'categories', 'coupons',
             # m2o
             'feedbacks', 'ratings'
