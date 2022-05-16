@@ -1,4 +1,4 @@
-from Core.views.observers.data_control.view import DataControlApi
+from Core.views.data_control.view import DataControlApi
 from . import Product, ProductSerializer
 from .actions.objects.subscribers.products.filter import product_filter_subscriber
 

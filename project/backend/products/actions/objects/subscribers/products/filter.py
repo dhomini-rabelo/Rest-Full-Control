@@ -1,4 +1,5 @@
-from Core.views.observers.data_control.subscribers.filter import FilterSubscriber
+from Core.views.data_control.handlers.filter import FilterSubscriber
+
 
 product_filter_subscriber = FilterSubscriber({
     'name': 'name__startswith',
