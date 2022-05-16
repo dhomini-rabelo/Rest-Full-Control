@@ -21,7 +21,10 @@ class FilterSubscriber:
         return Q(query_obj)
             
     def get_queries(self, queries: dict):
-        return Q(**{ self.queries_obj[k]: v for k, v in queries.items() if isinstance(v, (str, int, bool)) })
+        try:
+            return Q(**{ self.queries_obj[k]: v for k, v in queries.items() if isinstance(v, (str, int, bool)) })
+        except KeyError as error:
+            raise KeyError(f'{error} not in: {list(self.queries_obj.keys())}')
 
     def get_many_queries(self, queries_obj: list[dict] | dict | list[list]):
         if isinstance(queries_obj, dict):
@@ -33,5 +36,5 @@ class FilterSubscriber:
                 query_obj = query_obj | or_query_obj
             return Q(query_obj)
         else:
-            raise TypeError('Invalid type for queries_obj')
+            raise TypeError('Invalid type for queries_obj, accept only list or dict')
 

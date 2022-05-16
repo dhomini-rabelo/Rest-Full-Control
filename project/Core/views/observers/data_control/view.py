@@ -1,7 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 from django.db.models.query import QuerySet
 from collections.abc import Iterable
+from Fast.utils.main import get_type_name
 
 
 class DataControlApi(APIView):
@@ -11,7 +13,10 @@ class DataControlApi(APIView):
         body = request.data if request.data and isinstance(request.data, dict) else {}
         initial_queryset  = self.get_queryset()
 
-        new_queryset_or_custom_object = self.notify_subscribers(initial_queryset, body)
+        try:
+            new_queryset_or_custom_object = self.notify_subscribers(initial_queryset, body)
+        except Exception as error:
+            return Response({get_type_name(error): str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
         response = self.get_response(new_queryset_or_custom_object)
         return Response(response)
@@ -28,7 +33,7 @@ class DataControlApi(APIView):
         if isinstance(obj, Iterable) or isinstance(obj, dict):
             return obj
         else:
-            raise ValueError('Object type not found')
+            raise ValueError('Invalid object type')
 
     def notify_subscribers(self, current_queryset, request_body) -> QuerySet | Iterable | dict:
         queryset_or_object = current_queryset

@@ -1,7 +1,5 @@
-from django.http import HttpRequest
 from Core.views.observers.data_control.view import DataControlApi
 from . import Product, ProductSerializer
-from rest_framework.response import Response
 from .actions.objects.subscribers.products.filter import product_filter_subscriber
 
 
