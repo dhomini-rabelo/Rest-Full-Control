@@ -5,7 +5,7 @@ from ...data_control.exceptions import ModelNotFound
 
 
 
-class FilterSubscriber:
+class FilterQueryset:
     filter_body_name = 'filters'
     filter_models_name = 'filters_model'
 
@@ -51,7 +51,7 @@ class FilterSubscriber:
 
 
 
-class FilterSubscriberWithoutMediator(FilterSubscriber):
+class FilterQuerysetWithoutMediator(FilterQueryset):
 
     def __init__(self, models: dict = {}):
         self.models = models

@@ -7,18 +7,18 @@ from Fast.utils.main import get_type_name
 
 
 class DataControlApi(APIView):
-    subscribers = []
+    # require filter_function
 
     def get(self, request):
         body = request.data if request.data and isinstance(request.data, dict) else {}
         initial_queryset  = self.get_queryset()
 
         try:
-            new_queryset_or_custom_object = self.notify_subscribers(initial_queryset, body)
+            new_queryset = self.filter_function(initial_queryset, body)
+            response = self.get_response(new_queryset)
         except Exception as error:
             return Response({get_type_name(error): str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
-        response = self.get_response(new_queryset_or_custom_object)
         return Response(response)
 
     def get_response(self, obj: QuerySet | Iterable | dict) -> QuerySet | Iterable | dict:
@@ -30,7 +30,7 @@ class DataControlApi(APIView):
         except KeyError:
                 pass
         
-        if isinstance(obj, Iterable) or isinstance(obj, dict):
+        if isinstance(obj, (Iterable, dict)):
             return obj
         else:
             raise ValueError('Invalid type for queries_obj, accept only list or dict')

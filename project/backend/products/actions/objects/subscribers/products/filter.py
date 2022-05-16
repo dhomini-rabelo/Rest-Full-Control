@@ -1,7 +1,7 @@
-from Core.views.data_control.handlers.filter import FilterSubscriber
+from Core.views.data_control.handlers.filter import FilterQueryset
 
 
-product_filter_subscriber = FilterSubscriber({
+product_filter = FilterQueryset({
     'name': 'name__startswith',
     'price_gte': 'current_price__gte',
     'price_lte': 'current_price__lte',
