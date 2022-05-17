@@ -8,11 +8,12 @@ from backend.products.actions.objects import serializers
 class SelectorForQueryset:
     selector_name_in_body = 'selector'
     selector_model_name_in_body = 'selector_model'
-    simple_fields_name_in_body = 'simple_fields'
+    simple_fields_name_in_body = 'fields'
     relationship_fields_name_in_body = 'relationship_fields'
 
-    def __init__(self, models = {}):
+    def __init__(self, models = {}, is_many: bool = True):
         self.models = models
+        self.is_many = is_many
 
     def select(self, queryset: QuerySet, SerializerClass: ModelSerializer, body: dict):
         selector = body.get(self.selector_name_in_body) if body.get(self.selector_model_name_in_body) not in self.models.keys() \
@@ -68,5 +69,5 @@ class SelectorForQueryset:
         return SerializerCopy
 
     def get_response(self, SerializerClass: ModelSerializer, queryset: QuerySet):
-        serializer = SerializerClass(queryset, many=True)
+        serializer = SerializerClass(queryset, many=self.is_many)
         return serializer.data
