@@ -1,7 +1,7 @@
-from Core.views.data_control.handlers.selector import SelectorQueryset
+from Core.views.data_control.handlers.selector import SelectorForQueryset
 
 
-product_selector = SelectorQueryset({
+product_selector = SelectorForQueryset({
     "name": {
         "simple_fields": [
             "name"

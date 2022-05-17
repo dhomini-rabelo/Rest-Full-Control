@@ -5,7 +5,7 @@ from rest_framework.serializers import ModelSerializer, ListSerializer
 from backend.products.actions.objects import serializers
 
 
-class SelectorQueryset:
+class SelectorForQueryset:
     selector_name_in_body = 'selector'
     selector_model_name_in_body = 'selector_model'
     simple_fields_name_in_body = 'simple_fields'
@@ -14,7 +14,7 @@ class SelectorQueryset:
     def __init__(self, models = {}):
         self.models = models
 
-    def function(self, queryset: QuerySet, SerializerClass: ModelSerializer, body: dict):
+    def select(self, queryset: QuerySet, SerializerClass: ModelSerializer, body: dict):
         selector = body.get(self.selector_name_in_body) if body.get(self.selector_model_name_in_body) not in self.models.keys() \
                    else self.models[body[self.selector_model_name_in_body]]
         if not isinstance(selector, dict): return self.get_response(SerializerClass, queryset)

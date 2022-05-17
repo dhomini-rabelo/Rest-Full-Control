@@ -5,22 +5,22 @@ from ...data_control.exceptions import ModelNotFound
 
 
 
-class FilterQueryset:
-    filter_body_name = 'filters'
-    filter_models_name = 'filters_model'
+class FilterForQueryset:
+    filter_name_in_body = 'filters'
+    filter_models_name_in_body = 'filters_model'
 
     def __init__(self, mediator: dict, models: dict = {}):
         self.mediator = mediator
         self.models = models
 
     def filter_queryset(self, queryset: QuerySet, body: dict):
-        model = body.get(self.filter_models_name)
+        model = body.get(self.filter_models_name_in_body)
         if model in self.models.keys():
             query_obj = self.get_many_queries(self.models[model])
         elif model is not None:
             raise ModelNotFound(f'{model} not found in {list(self.models.keys())}')
         else:
-            queries = body.get(self.filter_body_name)
+            queries = body.get(self.filter_name_in_body)
             if (not isinstance(queries, list)) or len(queries) == 0: return queryset
             query_obj =  self.get_query_obj(queries)
         return queryset.filter(query_obj).distinct()
@@ -51,7 +51,7 @@ class FilterQueryset:
 
 
 
-class FilterQuerysetWithoutMediator(FilterQueryset):
+class FilterQuerysetWithoutMediator(FilterForQueryset):
 
     def __init__(self, models: dict = {}):
         self.models = models
