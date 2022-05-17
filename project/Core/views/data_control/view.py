@@ -7,7 +7,7 @@ from Fast.utils.main import get_type_name
 
 
 class DataControlApi(APIView):
-    # require filter_function
+    # require filter_function, selector_function
 
     def get(self, request):
         body = request.data if request.data and isinstance(request.data, dict) else {}
@@ -15,25 +15,11 @@ class DataControlApi(APIView):
 
         try:
             new_queryset = self.filter_function(initial_queryset, body)
-            response = self.get_response(new_queryset)
-        except Exception as error:
+            response = self.selector_function(new_queryset, self.get_serializer_class(), body)
+        except KeyError as error:
             return Response({get_type_name(error): str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(response)
-
-    def get_response(self, obj: QuerySet | Iterable | dict) -> QuerySet | Iterable | dict:
-        try:
-            if isinstance(obj, QuerySet):
-                SerializerClass = self.get_serializer_class()
-                serializer = SerializerClass(obj, many=True)
-                return serializer.data
-        except KeyError:
-                pass
-        
-        if isinstance(obj, (Iterable, dict)):
-            return obj
-        else:
-            raise ValueError('Invalid type for queries_obj, accept only list or dict')
 
     def notify_subscribers(self, current_queryset, request_body) -> QuerySet | Iterable | dict:
         queryset_or_object = current_queryset
