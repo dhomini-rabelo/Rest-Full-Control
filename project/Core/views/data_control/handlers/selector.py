@@ -21,7 +21,6 @@ class SelectorQueryset:
 
         return queryset
 
-
     def get_serializer_copy_class(
             self, SerializerClass: ModelSerializer, serializer_fields: list, 
             relationship_fields: None | dict[str, list] = None, is_instance: bool = True

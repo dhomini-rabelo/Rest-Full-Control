@@ -1,8 +1,8 @@
 from select import select
 from Core.views.data_control.view import DataControlApi
 from . import Product, ProductSerializer
-from .actions.objects.subscribers.products.filter import product_filter
-from .actions.objects.subscribers.products.selector import product_selector
+from .actions.objects.data_control.products.filter import product_filter
+from .actions.objects.data_control.products.selector import product_selector
 
 
 
