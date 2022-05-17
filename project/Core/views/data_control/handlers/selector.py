@@ -1,25 +1,33 @@
+from dataclasses import field
 from django.db.models.query import QuerySet
 from rest_framework.serializers import ModelSerializer, ListSerializer
-
-from backend.products.app.models.feedbacks import Feedback
 
 
 class SelectorQueryset:
     selector_name_in_body = 'selector'
+    simple_fields_name_in_body = 'simple_fields'
+    relationship_fields_name_in_body = 'relationship_fields'
 
     def function(self, queryset: QuerySet, SerializerClass: ModelSerializer, body: dict):
         selector = body.get(self.selector_name_in_body)
-        simple_fields = selector.get('simple_fields')
-        fks = selector.get('fks')
-        
-        SerializerCopy = self.get_serializer_copy_class(SerializerClass, simple_fields, fks, False)
-        serializer = SerializerCopy(queryset, many=True)
+        if not isinstance(selector, dict): return queryset
 
-        return serializer.data
+        simple_fields = selector.get(self.simple_fields_name_in_body)
+        relationship_fields = selector.get(self.relationship_fields_name_in_body)
+        if simple_fields is not None:
+            SerializerCopy = self.get_serializer_copy_class(SerializerClass, simple_fields, relationship_fields, False)
+            serializer = SerializerCopy(queryset, many=True)      
+            return serializer.data
 
-    def get_serializer_copy_class(self, SerializerClass: ModelSerializer, serializer_fields: list, fks: None | dict[str, list] = None, is_instance: bool = True):
+        return queryset
 
-        if fks is None:
+
+    def get_serializer_copy_class(
+            self, SerializerClass: ModelSerializer, serializer_fields: list, 
+            relationship_fields: None | dict[str, list] = None, is_instance: bool = True
+        ):
+
+        if relationship_fields is None:
             if not is_instance:
                 serializer_class, Dad = SerializerClass, SerializerClass
             elif isinstance(SerializerClass, ListSerializer):
@@ -34,15 +42,19 @@ class SelectorQueryset:
                     model = serializer_class.Meta.model
                     fields = serializer_fields
 
+        elif not all([field in serializer_fields for field in list(relationship_fields.keys())]):
+            raise ValueError(f'Some relationship field not in {self.simple_fields_name_in_body}')
             
         else:
             fields = SerializerClass().get_fields()
-            fks_serializers = { key: self.get_serializer_copy_class(fields[key], value) for key, value in fks.items() }
+            relationship_fields_serializers = {
+                field: self.get_serializer_copy_class(fields[field], field_list) for field, field_list in relationship_fields.items() 
+            }
 
             class SerializerCopy(SerializerClass):
-                for fk, value in fks_serializers.items():
-                    is_many = isinstance(fields[fk], ListSerializer)
-                    vars()[fk] = value(many=is_many)
+                for field, serializer in relationship_fields_serializers.items():
+                    is_many = isinstance(fields[field], ListSerializer)
+                    vars()[field] = serializer(many=is_many)
                 
                 class Meta:
                     model = SerializerClass.Meta.model
