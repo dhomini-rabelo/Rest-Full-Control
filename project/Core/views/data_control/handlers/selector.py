@@ -2,24 +2,30 @@ from dataclasses import field
 from django.db.models.query import QuerySet
 from rest_framework.serializers import ModelSerializer, ListSerializer
 
+from backend.products.actions.objects import serializers
+
 
 class SelectorQueryset:
     selector_name_in_body = 'selector'
+    selector_model_name_in_body = 'selector_model'
     simple_fields_name_in_body = 'simple_fields'
     relationship_fields_name_in_body = 'relationship_fields'
 
+    def __init__(self, models = {}):
+        self.models = models
+
     def function(self, queryset: QuerySet, SerializerClass: ModelSerializer, body: dict):
-        selector = body.get(self.selector_name_in_body)
-        if not isinstance(selector, dict): return queryset
+        selector = body.get(self.selector_name_in_body) if body.get(self.selector_model_name_in_body) not in self.models.keys() \
+                   else self.models[body[self.selector_model_name_in_body]]
+        if not isinstance(selector, dict): return self.get_response(SerializerClass, queryset)
 
         simple_fields = selector.get(self.simple_fields_name_in_body)
         relationship_fields = selector.get(self.relationship_fields_name_in_body)
         if simple_fields is not None:
-            SerializerCopy = self.get_serializer_copy_class(SerializerClass, simple_fields, relationship_fields, False)
-            serializer = SerializerCopy(queryset, many=True)      
-            return serializer.data
+            SerializerCopy = self.get_serializer_copy_class(SerializerClass, simple_fields, relationship_fields, False)     
+            return self.get_response(SerializerCopy, queryset)
 
-        return queryset
+        return self.get_response(SerializerClass, queryset)
 
     def get_serializer_copy_class(
             self, SerializerClass: ModelSerializer, serializer_fields: list, 
@@ -59,6 +65,8 @@ class SelectorQueryset:
                     model = SerializerClass.Meta.model
                     fields = serializer_fields
             
-
-
         return SerializerCopy
+
+    def get_response(self, SerializerClass: ModelSerializer, queryset: QuerySet):
+        serializer = SerializerClass(queryset, many=True)
+        return serializer.data
