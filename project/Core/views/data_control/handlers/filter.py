@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer, ListSerializer
-from typing import Union
+from typing import Any, Union
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from ...data_control.exceptions import ModelNotFound
@@ -22,10 +22,15 @@ class FilterForQueryset:
             # invalid model name
             raise ModelNotFound(f'{model} not found in {list(self.models.keys())}')
         else:
-            queries: list[dict | list | Union[dict, list]] = body.get(self.filter_name_in_body)
-            if (not isinstance(queries, list)) or len(queries) == 0: return queryset
+            queries: list[dict | list | Union[dict, list]] | None = body.get(self.filter_name_in_body)
+            if queries is None: return queryset
+            self._validate_queries(queries)
             query_obj =  self._get_query_obj(queries)
         return queryset.filter(query_obj).distinct()
+
+    def _validate_queries(self, queries: Any):
+        if not isinstance(queries, list): raise TypeError(f'"{self.filter_name_in_body}" must be a list')
+        if len(queries) == 0: raise ValueError(f'"{self.filter_name_in_body}" is empty')
 
     def _get_query_obj(self, queries: list[dict]):
         query_obj = Q()

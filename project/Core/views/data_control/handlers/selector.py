@@ -1,4 +1,5 @@
 from dataclasses import field
+from typing import Any, Type
 from django.db.models.query import QuerySet
 from rest_framework.serializers import ModelSerializer, ListSerializer
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
@@ -37,7 +38,8 @@ class SelectorForQueryset:
         """
         selector: dict | None = body.get(self.selector_name_in_body) if body.get(self.selector_model_name_in_body) not in self.models.keys() \
                    else self.models[body[self.selector_model_name_in_body]]
-        if not isinstance(selector, dict): return self._get_response(SerializerClass, queryset)
+        if selector is None: return self._get_response(SerializerClass, queryset)
+        self._validate_selector(selector)
 
         simple_fields: list[str] | None = selector.get(self.simple_fields_name_in_body)
         relationship_fields: dict[str, list] | None = selector.get(self.relationship_fields_name_in_body)
@@ -47,10 +49,25 @@ class SelectorForQueryset:
 
         return self._get_response(SerializerClass, queryset)
 
+    def _validate_selector(self, selector: Any):
+        self._validate_type_and_length(self.selector_name_in_body, selector, dict)
+
+    def _validate_args_for__get_serializer_copy_class(self, serializer_fields: Any, relationship_fields: Any):
+        self._validate_type_and_length(self.simple_fields_name_in_body, serializer_fields, list)
+        if relationship_fields is not None:
+            self._validate_type_and_length(self.relationship_fields_name_in_body, relationship_fields, dict)
+            if not all([ isinstance(relationship_fields[key], list) and len(relationship_fields[key]) > 0 for key in relationship_fields.keys()]):
+                raise ValueError('Invalid relationship_field value, value must be a list with length > 0')
+
+    def _validate_type_and_length(self, name: str, obj: Any, types: Type | tuple[Type]):
+        if not isinstance(obj, types): raise TypeError(f'"{name}" must be a {types}')
+        if len(obj) == 0: raise ValueError(f'"{name}" is empty')
+
     def _get_serializer_copy_class(
             self, SerializerClass: ModelSerializer, serializer_fields: list, 
             relationship_fields: None | dict[str, list] = None, is_instance: bool = True
         ) -> ModelSerializer | ListSerializer:
+        self._validate_args_for__get_serializer_copy_class(serializer_fields, relationship_fields)
 
         if relationship_fields is None:
             if not is_instance:
