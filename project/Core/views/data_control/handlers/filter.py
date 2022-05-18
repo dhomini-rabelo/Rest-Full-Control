@@ -15,20 +15,23 @@ class FilterForQueryset:
         self.models = models # request.body models
 
     def filter_queryset(self, queryset: QuerySet, body: dict):
-        model: str | None = body.get(self.filter_models_name_in_body)
-        if model in self.models.keys():
-            query_obj: dict = self._get_many_queries(self.models[model])
-        elif model is not None:
-            # invalid model name
-            raise ModelNotFound(f'{model} not found in {list(self.models.keys())}')
-        else:
-            queries: list[dict | list | Union[dict, list]] | None = body.get(self.filter_name_in_body)
-            if queries is None: return queryset
-            self._validate_queries(queries)
-            query_obj =  self._get_query_obj(queries)
+        filter_obj: list[dict | list | Union[dict, list]] | None = self._get_filter_obj(body)
+        if filter_obj is None: return queryset
+        query_obj =  self._get_query_obj(filter_obj)
         return queryset.filter(query_obj).distinct()
 
-    def _validate_queries(self, queries: Any):
+    def _get_filter_obj(self, body: dict) -> None | dict:
+        model = body.get(self.filter_models_name_in_body)
+        custom_queries = body.get(self.filter_name_in_body)
+        if model in self.models.keys():
+            return self.models[model]
+        elif model is not None:
+            raise ModelNotFound(f'{model} not found in {list(self.models.keys())}') # invalid model name
+        elif custom_queries is not None:
+            self._validate_filter_obj(custom_queries)
+        return custom_queries
+
+    def _validate_filter_obj(self, queries: Any):
         if not isinstance(queries, list): raise TypeError(f'"{self.filter_name_in_body}" must be a list')
         if len(queries) == 0: raise ValueError(f'"{self.filter_name_in_body}" is empty')
 

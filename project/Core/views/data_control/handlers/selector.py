@@ -3,6 +3,7 @@ from typing import Any, Type
 from django.db.models.query import QuerySet
 from rest_framework.serializers import ModelSerializer, ListSerializer
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
+from Core.views.data_control.exceptions import ModelNotFound
 from backend.products.actions.objects import serializers
 
 
@@ -36,10 +37,8 @@ class SelectorForQueryset:
         Returns:
             ReturnDict | ReturnList: Serialized queryset
         """
-        selector: dict | None = body.get(self.selector_name_in_body) if body.get(self.selector_model_name_in_body) not in self.models.keys() \
-                   else self.models[body[self.selector_model_name_in_body]]
+        selector: dict | None = self._get_selector(body)
         if selector is None: return self._get_response(SerializerClass, queryset)
-        self._validate_selector(selector)
 
         simple_fields: list[str] | None = selector.get(self.simple_fields_name_in_body)
         relationship_fields: dict[str, list] | None = selector.get(self.relationship_fields_name_in_body)
@@ -48,6 +47,17 @@ class SelectorForQueryset:
             return self._get_response(SerializerCopy, queryset)
 
         return self._get_response(SerializerClass, queryset)
+
+    def _get_selector(self, body: dict) -> None | dict:
+        model = body.get(self.selector_model_name_in_body)
+        custom_selector = body.get(self.selector_name_in_body)
+        if model in self.models.keys():
+            return self.models[model]
+        elif model is not None:
+            raise ModelNotFound(f'{model} not found in {list(self.models.keys())}') # invalid model name
+        elif custom_selector is not None:
+            self._validate_selector(custom_selector)
+        return custom_selector     
 
     def _validate_selector(self, selector: Any):
         self._validate_type_and_length(self.selector_name_in_body, selector, dict)
