@@ -1,0 +1,2 @@
+class ObjFake:
+    pass
