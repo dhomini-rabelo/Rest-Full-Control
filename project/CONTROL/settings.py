@@ -109,7 +109,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # My settings
 
-STATICFILES_DIRS = [Path(BASE_DIR, 'frontend/static')]
+STATICFILES_DIRS = []
 STATIC_ROOT = Path('static')
 MEDIA_ROOT = Path(BASE_DIR,'frontend/media')
 MEDIA_URL = '/media/'
