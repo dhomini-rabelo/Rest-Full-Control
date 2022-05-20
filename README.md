@@ -365,12 +365,14 @@ Todas as queries de um dicionário formam uma operação AND, já dicionários d
 <br>
 <h2 id="use">Como usar na sua máquina</h2>
 
-<h3>Depois de clonar o projeto basta apenas seguir os comandos abaixo.</h3>
+<h3>Depois de clonar o projeto basta apenas seguir os comandos abaixo. O banco de dados sqlite já está no projeto</h3>
 <br>
 
 ```
 python -m venv venv
 venv/Scripts/Activate.ps1 # if use PowerShell
+pip install -r requirements.txt
+pip freeze > requirements.txt
 cd project
 python manage.py runserver
 ```
