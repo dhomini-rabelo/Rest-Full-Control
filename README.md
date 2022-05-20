@@ -3,6 +3,8 @@
 <h2>🔗 Tópicos</h2>
 <ul>
 <li><a href="#about">Sobre</a></li>
+<li><a href="#tools">Ferramentas</a></li>
+<li><a href="#db">Banco de dados</a></li>
 </ul>
 
 <br>
@@ -43,3 +45,71 @@
 
 
 </ul>
+
+<br>
+<h2 id="tools">🛠️ Ferramentas</h2>
+
+<ul>
+<li>Django</li>
+<li>Django Rest Framework</li>
+<li>Fast</li>
+</ul>
+
+<br>
+<h2 id="db">🏷️ Modelagem do banco de dados</h2>
+
+<h3>User</h3>
+<ul>
+<li>Username ( gerenciada pelo AbstractUser do Django )</li>
+<li>Senha ( gerenciada pelo AbstractUser do Django )</li>
+<li>Nome</li>
+<li>Email</li>
+</ul>
+
+<h3>Categorias</h3>
+<ul>
+<li>Nome</li>
+</ul>
+
+<h3>Empresa</h3>
+<ul>
+<li>Nome</li>
+</ul>
+
+<h3>Cupons</h3>
+<ul>
+<li>Nome</li>
+<li>Valor</li>
+<li>is_percent BOOL</li>
+<li>is_for_all_products BOOL</li>
+</ul>
+
+<h3>Produto</h3>
+<ul>
+<li>Nome</li>
+<li>Descrição</li>
+<li>Preço atual</li>
+<li>Preço promocional</li>
+<li>Valor de cashback</li>
+<li>cashback_is_percent BOOL</li>
+<li>Empresa FK</li>
+<li>Categorias m2m</li>
+<li>Cupons m2m</li>
+<li>Feedback m2o</li>
+</ul>
+
+<h3>Feedback</h3>
+<ul>
+<li>User FK</li>
+<li>Comentário</li>
+<li>Produto FK</li>
+</ul>
+
+<h3>Rating</h3>
+<ul>
+<li>User FK</li>
+<li>Comentário</li>
+<li>Valor</li>
+<li>Produto FK</li>
+</ul>
+

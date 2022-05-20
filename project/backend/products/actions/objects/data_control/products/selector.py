@@ -46,7 +46,8 @@ product_selector = SelectorForQueryset({
             "promotion_price",
             "cashback_value",
             "cashback_is_percent",
-            "coupons"
+            "coupons",
+            "quantity",
         ],
         "relationship_fields": {
             "coupons": [
