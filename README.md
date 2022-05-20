@@ -5,6 +5,9 @@
 <li><a href="#about">Sobre</a></li>
 <li><a href="#tools">Ferramentas</a></li>
 <li><a href="#db">Banco de dados</a></li>
+<li><a href="#organization">Organização</a></li>
+<li><a href="#doc">Documentação</a></li>
+<li><a href="#use">Como usar na sua máquina</a></li>
 </ul>
 
 <br>
@@ -113,3 +116,263 @@
 <li>Produto FK</li>
 </ul>
 
+<br>
+<h2 id="organization">Organização</h2>
+
+<ul>
+<li>
+As classes principais do projeto estão na pasta core
+</li>
+<li>
+Os apps estão na pasta backend
+</li>
+<li>
+CONTROL é onde está a configuração do projeto
+</li>
+</ul>
+
+
+<br>
+<h2 id="doc">Documentação</h2>
+<br>
+<p>Única rota do projeto é o /products</p>
+<br>
+
+<hr>
+<h2>Selecionar campos desejados</h2>
+<br>
+<p>Empty body or {}</p>
+<img src="./readme/default.gif">
+
+<hr>
+<p>Body ⬇️</p>
+
+```
+{
+	"selector": {
+		"fields": [
+			"name"
+		]
+	}
+}
+```
+
+<img src="./readme/name.JPG">
+<br>
+
+<hr>
+<p>Body ⬇️</p>
+
+```
+{
+	"selector": {
+		"fields": [
+			"name",
+			"ratings"
+		]
+	}
+}
+```
+
+<img src="./readme/ratings.gif">
+<br>
+<hr>
+<h3>Para selecionar campos de um relacionamento seja FK, m2m, m2o. Body ⬇️</h3>
+
+```
+{
+	"selector": {
+		"fields": [
+			"name",
+			"ratings"
+		],
+		"relationship_fields": {
+			"ratings": [
+				"value"
+			]
+		}
+	}
+}
+```
+
+<img src="./readme/ratings_value.gif">
+<br>
+<br>
+<h2>Fazendo filtros</h2>
+<p>
+Todas as queries de um dicionário formam uma operação AND, já dicionários dentro de uma lista fazem operações OR
+</p>
+<hr>
+<h3>Filtro simples. Body ⬇️</h3>
+<p>Com mediador, assim você não precisa especificar a query</p>
+
+```
+{
+	"filters": [
+		{
+			"name": "notebook"
+		}
+	],
+	"selector": {
+		"fields": [
+			"name"
+		]
+	}
+}
+```
+
+<p>Sem mediador</p>
+
+```
+{
+	"filters": [
+		{
+			"name__startwith": "notebook"
+		}
+	],
+	"selector": {
+		"fields": [
+			"name"
+		]
+	}
+}
+```
+
+
+<img src="./readme/simple_filter.JPG">
+<br>
+
+
+<hr>
+<p>AND OPERATION. Body ⬇️</p>
+
+```
+{
+	"filters": [
+		{
+			"name": "notebook",
+			"price_gte": 2000
+		}
+	],
+	"selector": {
+		"fields": [
+			"name"
+		]
+	}
+}
+```
+
+<img src="./readme/and_filter.JPG">
+<br>
+
+<hr>
+<p>OR OPERATION. Body ⬇️</p>
+
+```
+{
+	"filters": [
+		{
+			"name": "notebook"
+		},
+		{
+			"company": "samsung"
+		}
+	],
+	"selector": {
+		"fields": [
+			"name"
+		]
+	}
+}
+```
+
+<img src="./readme/or_filter.JPG">
+<br>
+
+<h2>Models</h2>
+<p>Modelos servem apenas para otimizadas consultas padrões</p>
+
+<h3>Selector</h3>
+
+```
+
+{
+    "selector_model": "list"
+}
+
+// Equal ⬇️
+
+{
+    "selector": {
+        "fields": [
+            "name",
+            "current_price",
+            "promotion_price",
+            "cashback_value",
+            "cashback_is_percent",
+            "ratings",
+            "categories",
+        ],
+        "relationship_fields": {
+            "ratings": [
+                "value",
+            ],
+            "categories": [
+                "name"
+            ]
+        }
+    }
+}
+```
+
+<h3>Filtro</h3>
+
+```
+{
+    "filters_model": "promotion"
+}
+
+// Equal ⬇️
+
+{
+    "filters": [
+        {
+            "not_has_promotion": False
+        }
+    ]
+}
+
+```
+
+<br>
+<br>
+<h2>Validação</h2>
+<br>
+<img src="./readme/validation1.JPG">
+<br>
+<br>
+<img src="./readme/validation2.JPG">
+<br>
+<br>
+<img src="./readme/validation3.JPG">
+<br>
+<br>
+<img src="./readme/validation4.JPG">
+<br>
+<br>
+<img src="./readme/validation5.JPG">
+<br>
+
+<br>
+<br>
+<h2 id="use">Como usar na sua máquina</h2>
+
+<h3>Depois de clonar o projeto basta apenas seguir os comandos abaixo.</h3>
+<br>
+
+```
+python -m venv venv
+venv/Scripts/Activate.ps1 # if use PowerShell
+cd project
+python manage.py runserver
+```
