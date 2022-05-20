@@ -134,7 +134,6 @@ CONTROL é onde está a configuração do projeto
 
 <br>
 <h2 id="doc">Documentação</h2>
-<br>
 <p>Única rota do projeto é o /products</p>
 <br>
 
@@ -196,7 +195,6 @@ CONTROL é onde está a configuração do projeto
 ```
 
 <img src="./readme/ratings_value.gif">
-<br>
 <br>
 <h2>Fazendo filtros</h2>
 <p>
@@ -363,7 +361,7 @@ Todas as queries de um dicionário formam uma operação AND, já dicionários d
 <img src="./readme/validation5.JPG">
 <br>
 
-<br>
+
 <br>
 <h2 id="use">Como usar na sua máquina</h2>
 
