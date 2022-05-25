@@ -365,7 +365,7 @@ Todas as queries de um dicionário formam uma operação AND, já dicionários d
 <br>
 <h2 id="use">Como usar na sua máquina</h2>
 
-<h3>Depois de clonar o projeto basta apenas seguir os comandos abaixo. O banco de dados sqlite já está no projeto</h3>
+<h3>Depois de clonar o projeto basta apenas preencher o arquivo .env.dev e renomeá-lo para .env e seguir os comandos abaixo.</h3>
 <br>
 
 ```
